@@ -1,0 +1,4 @@
+{
+  "desc": "推优材料填写工具",
+  "rules": [{"action": "disallow", "page": "*"}]
+}
