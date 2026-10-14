@@ -476,6 +476,73 @@ Page({
     wx.setClipboardData({data:lines.join('\n')});
   },
 
+
+  draftJsonFilename() {
+    const d = new Date(), pad = v => String(v).padStart(2,'0');
+    return 'gdufe-bdai-tuiyou-docx-' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds()) + '.json';
+  },
+
+  exportJsonDraft() {
+    try {
+      const form = this.data.form;
+      const validation = T.validate(form,{assets:this.assets || {}});
+      const payload = {
+        version:2, rulesDate:RULES_DATE, exportedAt:new Date().toISOString(),
+        data:form, assets:this.assets || {},
+        validationSnapshot:{executed:this.data.validated,errors:validation.errors,warnings:validation.warnings,passed:validation.errors.length===0,revision:this.revision},
+        checkSnapshot:{
+          humanChecks:form.checks,
+          scoreEvidence:{gpa:form.gpa.map(x=>!!x.evidence),scores:form.scores.map(x=>!!x.evidence)},
+          recordChecks:Object.fromEntries(['cadres','awards','activities'].map(k=>[k,form[k].map(x=>Object.fromEntries(Object.entries(x).filter(([,v])=>typeof v==='boolean')))])),
+          calendarConfirmed:!!form.calendarConfirmed,pdfMatch:!!form.pdfMatch
+        },
+        verificationSnapshot:{docxHash:this.docxDraft?.fingerprint||null,pdfPages:this.data.pdfPages||null}
+      };
+      const name=this.draftJsonFilename();
+      const path=wx.env.USER_DATA_PATH+'/'+name;
+      fs.writeFile({filePath:path,data:JSON.stringify(payload,null,2),encoding:'utf8',success:()=>{
+        wx.shareFileMessage({filePath:path,fileName:name,success:()=>{},fail:()=>wx.showModal({title:'草稿已保存到小程序文件',content:path,showCancel:false})});
+      },fail:e=>wx.showModal({title:'导出失败',content:e.errMsg||'文件写入失败',showCancel:false})});
+    } catch(e) { wx.showModal({title:'导出失败',content:e.message||'无法生成JSON',showCancel:false}); }
+  },
+
+  async importJsonDraft() {
+    try {
+      const pick=await wxp('chooseMessageFile',{count:1,type:'file',extension:['json']});
+      const file=pick.tempFiles?.[0];
+      if(!file)return;
+      if(file.size>15*1024*1024)throw new Error('草稿文件不能超过15MB');
+      const content=await new Promise((resolve,reject)=>fs.readFile({filePath:file.path,encoding:'utf8',success:r=>resolve(r.data),fail:reject}));
+      const p=JSON.parse(content);
+      if(![1,2].includes(p.version)||p.rulesDate!==RULES_DATE)throw new Error('草稿版本或审核批次不匹配');
+      const source=p.data||p.form;
+      if(!source||typeof source!=='object'||Array.isArray(source))throw new Error('草稿填写内容无效');
+      for(const k of ['gpa','scores','cadres','awards','activities'])if(!Array.isArray(source[k])||((k==='gpa'||k==='scores')?source[k].length!==3:source[k].length>30))throw new Error('草稿列表结构不正确');
+      const assets={};
+      for(const k of ['photo','committeeSignature','publicSignature']){
+        const a=p.assets?.[k];
+        if(!a)continue;
+        if(typeof a.base64!=='string'||a.base64.length>4*1024*1024||!Number.isFinite(a.width)||!Number.isFinite(a.height)||a.width<=0||a.height<=0)throw new Error('草稿图片数据无效');
+        assets[k]=a;
+      }
+      const ok=await new Promise(resolve=>wx.showModal({title:'导入JSON草稿',content:'将覆盖当前表单与勾选状态。历史校验结果仅作快照；导入后重新计算，DOCX和PDF需重新核验。',success:r=>resolve(r.confirm),fail:()=>resolve(false)}));
+      if(!ok)return;
+      this.assets=assets;
+      const form={...initialForm(),...source,checks:{...initialForm().checks,...source.checks}};
+      form.pdfMatch=false;
+      const checks=T.checks.map(([key,label])=>({key,label,checked:!!form.checks[key]}));
+      const imageState={};
+      for(const k of ['photo','committeeSignature','publicSignature']){
+        const a=assets[k];imageState[k]=a?{ready:true,label:a.width+' × '+a.height+' · 已从草稿导入'}:{ready:false,label:'未选择'};
+      }
+      this.revision+=1;this.docxDraft=null;this.pdfCheck=null;
+      this.setData({form,checks,imageState,step:0,validated:false,errors:[],warnings:[],issueCount:'—',draftReady:false,pdfPages:0,finalReady:false,docStatus:'草稿已导入，请重新生成校对稿。',pdfStatus:'页数核验需重新执行。'});
+      this.refreshDerived();
+      if(p.validationSnapshot?.executed)this.validateAll(false);
+      wx.showToast({title:'JSON草稿已导入',icon:'success'});
+    }catch(e){wx.showModal({title:'无法导入草稿',content:e.message||'无法读取JSON文件',showCancel:false});}
+  },
+
   saveLocalDraft() {
     try {
       const payload = {
