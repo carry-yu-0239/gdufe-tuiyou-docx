@@ -1,0 +1,17 @@
+{
+  "description": "广东财经大学大数据与人工智能学院推优入党综合考察表填写工具 · 微信小程序版",
+  "packOptions": {"ignore": []},
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "compileHotReLoad": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "trial",
+  "appid": "touristappid",
+  "projectname": "gdufe-tuiyou-docx",
+  "miniprogramRoot": "miniprogram/"
+}

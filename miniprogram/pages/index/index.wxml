@@ -1,0 +1,495 @@
+<view class="page">
+  <view class="hero">
+    <view class="brand-row">
+      <view class="brand-mark">团</view>
+      <view class="brand-copy">
+        <text class="brand-title">数智学院 · 团支部材料工具</text>
+        <text class="brand-sub">2026—2027学年度 · 第一学期</text>
+      </view>
+      <view class="local-badge">本机处理</view>
+    </view>
+    <view class="hero-main">
+      <view>
+        <text class="eyebrow">材料准备 / 入党推优</text>
+        <text class="title">推优入党综合考察表</text>
+        <text class="lede">逐项填写、即时校验，在手机端生成可编辑 Word。</text>
+      </view>
+      <view class="page-emblem">
+        <text class="page-num">02</text>
+        <text class="page-label">页数要求</text>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view class="steps" scroll-x enable-flex>
+    <view class="steps-inner">
+      <view
+        wx:for="{{stepNames}}"
+        wx:key="index"
+        class="step-chip {{step===index?'active':''}}"
+        data-step="{{index}}"
+        bindtap="goStep"
+      >
+        <text class="step-no">{{index+1}}</text>
+        <text>{{item}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="draft-bar">
+    <text>资料仅保存在当前小程序与本机草稿中。</text>
+    <view class="draft-actions">
+      <button size="mini" bindtap="saveLocalDraft">保存草稿</button>
+      <button size="mini" bindtap="restoreLocalDraft" disabled="{{!hasLocalDraft}}">恢复</button>
+      <button size="mini" bindtap="clearLocalDraft" disabled="{{!hasLocalDraft}}">清除</button>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-head">
+      <text class="section-no">0{{step+1}}</text>
+      <view>
+        <text class="section-title">{{stepNames[step]}}</text>
+        <text class="section-tip">{{stepTips[step]}}</text>
+      </view>
+    </view>
+
+    <view class="card-body">
+      <!-- Step 1 -->
+      <block wx:if="{{step===0}}">
+        <view class="field">
+          <text class="label">真实姓名 *</text>
+          <input value="{{form.name}}" data-key="name" bindinput="bindField" maxlength="20" placeholder="与申请书、名单保持一致" />
+        </view>
+
+        <view class="grid2">
+          <view class="field">
+            <text class="label">性别 *</text>
+            <picker range="{{genderOptions}}" data-key="gender" data-source="genderOptions" bindchange="bindPicker">
+              <view class="picker">{{form.gender || '请选择'}}</view>
+            </picker>
+          </view>
+          <view class="field">
+            <text class="label">入学年级 *</text>
+            <picker range="{{gradeOptions}}" data-key="grade" data-source="gradeOptions" bindchange="bindPicker">
+              <view class="picker">{{form.grade}}</view>
+            </picker>
+          </view>
+        </view>
+
+        <view class="field">
+          <text class="label">候选人身份 *</text>
+          <picker range="{{roleOptions}}" range-key="label" data-key="role" data-source="roleOptions" bindchange="bindPicker">
+            <view class="picker">{{form.role==='secretary'?'本班团支书':form.role==='member'?'普通团员（含其他班委）':'请选择'}}</view>
+          </picker>
+          <text class="hint">团支书本人参评时，委员会意见须由宣传委员代签。</text>
+        </view>
+
+        <view class="field">
+          <text class="label">所在团支部 *</text>
+          <input value="{{form.branch}}" data-key="branch" bindinput="bindField" maxlength="85" placeholder="优先复制智慧团建正式全称" />
+        </view>
+
+        <view class="grid2">
+          <view class="field">
+            <text class="label">有无参加党课 *</text>
+            <picker range="{{haveOptions}}" data-key="partyClass" data-source="haveOptions" bindchange="bindPicker">
+              <view class="picker">{{form.partyClass || '请选择'}}</view>
+            </picker>
+          </view>
+          <view class="field">
+            <text class="label">上一学年是否挂科 *</text>
+            <picker range="{{yesNoOptions}}" data-key="failed" data-source="yesNoOptions" bindchange="bindPicker">
+              <view class="picker">{{form.failed || '请选择'}}</view>
+            </picker>
+          </view>
+        </view>
+
+        <view class="field">
+          <text class="label">申请入党时间 *</text>
+          <picker range="{{applyDateOptions}}" range-key="label" data-key="applyDate" data-source="applyDateOptions" bindchange="bindPicker">
+            <view class="picker">{{form.applyDate || '请选择指定批次日期'}}</view>
+          </picker>
+        </view>
+
+        <view class="field">
+          <text class="label">成为入党积极分子时间 *</text>
+          <picker range="{{activistDateOptions}}" range-key="label" data-key="activistDate" data-source="activistDateOptions" bindchange="bindPicker">
+            <view class="picker">{{form.activistDate || '请选择'}}</view>
+          </picker>
+        </view>
+
+        <view class="grid2">
+          <view class="field">
+            <text class="label">此前正式推优次数 *</text>
+            <input type="number" value="{{form.recommendations}}" data-key="recommendations" bindinput="bindField" />
+          </view>
+          <view class="field">
+            <text class="label">本次推荐阶段 *</text>
+            <picker range="{{targetOptions}}" data-key="target" data-source="targetOptions" bindchange="bindPicker">
+              <view class="picker">{{form.target || '请选择'}}</view>
+            </picker>
+          </view>
+        </view>
+
+        <view class="image-field">
+          <view>
+            <text class="label">本人证件照 *</text>
+            <text class="hint">PNG/JPG，建议红底清晰证件照；仅在本机读取。</text>
+          </view>
+          <button class="outline" data-key="photo" bindtap="chooseImage">{{imageState.photo.ready?'重新选择':'选择图片'}}</button>
+          <text class="image-status {{imageState.photo.ready?'ok':''}}">{{imageState.photo.label}}</text>
+        </view>
+      </block>
+
+      <!-- Step 2 -->
+      <block wx:if="{{step===1}}">
+        <view class="notice neutral">
+          <text class="notice-title">学年成绩与累计绩点分开填写</text>
+          <text>表内填写各学年成绩；资格审核单独核对在校累计平均学分绩点。</text>
+        </view>
+
+        <view class="switch-line">
+          <text>我是2026级新生，尚未产生大学成绩</text>
+          <switch checked="{{form.noGrades}}" data-key="noGrades" bindchange="bindSwitch" color="#a13332" />
+        </view>
+
+        <view class="field" wx:if="{{!(form.grade==='2026' && form.noGrades)}}">
+          <text class="label">在校累计平均学分绩点 *</text>
+          <input type="digit" value="{{form.cumulativeGpa}}" data-key="cumulativeGpa" bindinput="bindField" placeholder="0.00 - 5.00" />
+          <text class="hint">实施办法门槛为2.0；请核对原始成绩记录。</text>
+        </view>
+
+        <text class="subhead">学年平均绩点及排名</text>
+        <view class="score-card" wx:for="{{form.gpa}}" wx:key="index">
+          <view class="score-head">
+            <text>大{{index+1}}绩点</text>
+            <view class="inline-switch">
+              <text>本学年无成绩</text>
+              <switch checked="{{item.none}}" data-group="gpa" data-index="{{index}}" data-key="none" bindchange="bindScoreSwitch" color="#a13332" />
+            </view>
+          </view>
+          <view class="grid3" wx:if="{{!item.none}}">
+            <input type="digit" value="{{item.value}}" data-group="gpa" data-index="{{index}}" data-key="value" bindinput="bindScoreField" placeholder="绩点" />
+            <input type="number" value="{{item.rank}}" data-group="gpa" data-index="{{index}}" data-key="rank" bindinput="bindScoreField" placeholder="排名" />
+            <input type="number" value="{{item.total}}" data-group="gpa" data-index="{{index}}" data-key="total" bindinput="bindScoreField" placeholder="专业人数" />
+          </view>
+          <view class="switch-line compact" wx:if="{{!item.none}}">
+            <text>已逐项核对原始截图</text>
+            <switch checked="{{item.evidence}}" data-group="gpa" data-index="{{index}}" data-key="evidence" bindchange="bindScoreSwitch" color="#216452" />
+          </view>
+        </view>
+
+        <text class="subhead">学年综测及排名</text>
+        <view class="score-card" wx:for="{{form.scores}}" wx:key="index">
+          <view class="score-head">
+            <text>大{{index+1}}综测</text>
+            <view class="inline-switch">
+              <text>本学年无成绩</text>
+              <switch checked="{{item.none}}" data-group="scores" data-index="{{index}}" data-key="none" bindchange="bindScoreSwitch" color="#a13332" />
+            </view>
+          </view>
+          <view class="grid3" wx:if="{{!item.none}}">
+            <input type="digit" value="{{item.value}}" data-group="scores" data-index="{{index}}" data-key="value" bindinput="bindScoreField" placeholder="综测" />
+            <input type="number" value="{{item.rank}}" data-group="scores" data-index="{{index}}" data-key="rank" bindinput="bindScoreField" placeholder="排名" />
+            <input type="number" value="{{item.total}}" data-group="scores" data-index="{{index}}" data-key="total" bindinput="bindScoreField" placeholder="专业人数" />
+          </view>
+          <view class="switch-line compact" wx:if="{{!item.none}}">
+            <text>已逐项核对原始截图</text>
+            <switch checked="{{item.evidence}}" data-group="scores" data-index="{{index}}" data-key="evidence" bindchange="bindScoreSwitch" color="#216452" />
+          </view>
+        </view>
+
+        <text class="subhead">志愿时长</text>
+        <view class="notice">
+          <text class="notice-title">上一学年统计范围</text>
+          <text>2025年09月01日至2026年09月01日。累计时长另行核对。</text>
+        </view>
+
+        <view class="grid2">
+          <view class="field"><text class="label">上一学年：小时 *</text><input type="number" value="{{form.annualHours}}" data-key="annualHours" bindinput="bindField" /></view>
+          <view class="field"><text class="label">上一学年：分钟 *</text><input type="number" value="{{form.annualMinutes}}" data-key="annualMinutes" bindinput="bindField" /></view>
+          <view class="field"><text class="label">累计：小时 *</text><input type="number" value="{{form.totalHours}}" data-key="totalHours" bindinput="bindField" /></view>
+          <view class="field"><text class="label">累计：分钟 *</text><input type="number" value="{{form.totalMinutes}}" data-key="totalMinutes" bindinput="bindField" /></view>
+        </view>
+
+        <view class="grid2">
+          <view class="field">
+            <text class="label">院内通报批评及以上处分 *</text>
+            <picker range="{{haveOptions}}" data-key="discipline" data-source="haveOptions" bindchange="bindPicker">
+              <view class="picker">{{form.discipline || '请选择'}}</view>
+            </picker>
+          </view>
+          <view class="field">
+            <text class="label">是否连续3个月未交团费 *</text>
+            <picker range="{{yesNoOptions}}" data-key="dues" data-source="yesNoOptions" bindchange="bindPicker">
+              <view class="picker">{{form.dues || '请选择'}}</view>
+            </picker>
+          </view>
+        </view>
+      </block>
+
+      <!-- Step 3 -->
+      <block wx:if="{{step===2}}">
+        <view class="notice neutral">没有相关内容时保持列表为空，Word 自动填“无”。日期统一到年月，优先选代表性内容。</view>
+
+        <view class="record-title">
+          <text class="subhead no-margin">学生干部工作经历</text>
+          <button size="mini" data-type="cadres" bindtap="addRecord">＋ 添加</button>
+        </view>
+        <view wx:if="{{form.cadres.length===0}}" class="empty">暂无填写项 · Word 将填写“无”</view>
+        <view class="record-card" wx:for="{{form.cadres}}" wx:key="index">
+          <view class="record-head">
+            <text>第{{index+1}}项</text>
+            <button size="mini" data-type="cadres" data-index="{{index}}" bindtap="removeRecord">移除</button>
+          </view>
+          <view class="field"><text class="label">具体职务</text><input value="{{item.name}}" data-type="cadres" data-index="{{index}}" data-key="name" bindinput="bindRecordField" /></view>
+          <view class="grid2">
+            <view class="field">
+              <text class="label">任职状态</text>
+              <picker range="{{statusOptions}}" data-type="cadres" data-index="{{index}}" data-key="status" bindchange="bindRecordPicker">
+                <view class="picker">{{item.status}}</view>
+              </picker>
+            </view>
+            <view class="field"><text class="label">开始年月</text><picker mode="date" fields="month" value="{{item.start}}" data-type="cadres" data-index="{{index}}" data-key="start" bindchange="bindRecordField"><view class="picker">{{item.start||'请选择'}}</view></picker></view>
+          </view>
+          <view class="field" wx:if="{{item.status==='曾任'}}"><text class="label">卸任年月</text><picker mode="date" fields="month" value="{{item.end}}" data-type="cadres" data-index="{{index}}" data-key="end" bindchange="bindRecordField"><view class="picker">{{item.end||'请选择'}}</view></picker></view>
+          <view class="switch-line compact"><text>大学以来的真实任职</text><switch checked="{{item.university}}" data-type="cadres" data-index="{{index}}" data-key="university" bindchange="bindRecordSwitch" color="#216452"/></view>
+          <view class="switch-line compact"><text>本学年新上任的现任干部</text><switch checked="{{item.newAppointment}}" data-type="cadres" data-index="{{index}}" data-key="newAppointment" bindchange="bindRecordSwitch" color="#216452"/></view>
+          <view class="switch-line compact"><text>已有有效任职证明</text><switch checked="{{item.evidence}}" data-type="cadres" data-index="{{index}}" data-key="evidence" bindchange="bindRecordSwitch" color="#216452"/></view>
+        </view>
+
+        <view class="record-title top-gap">
+          <text class="subhead no-margin">奖惩情况</text>
+          <button size="mini" data-type="awards" bindtap="addRecord">＋ 添加</button>
+        </view>
+        <view wx:if="{{form.awards.length===0}}" class="empty">暂无填写项 · Word 将填写“无”</view>
+        <view class="record-card" wx:for="{{form.awards}}" wx:key="index">
+          <view class="record-head"><text>第{{index+1}}项</text><button size="mini" data-type="awards" data-index="{{index}}" bindtap="removeRecord">移除</button></view>
+          <view class="field"><text class="label">证书/正式文件中的名称</text><input value="{{item.name}}" data-type="awards" data-index="{{index}}" data-key="name" bindinput="bindRecordField" /></view>
+          <view class="field"><text class="label">正式等级（无等级留空）</text><input value="{{item.level}}" data-type="awards" data-index="{{index}}" data-key="level" bindinput="bindRecordField" /></view>
+          <view class="grid2">
+            <view class="field"><text class="label">奖惩年月</text><picker mode="date" fields="month" value="{{item.month}}" data-type="awards" data-index="{{index}}" data-key="month" bindchange="bindRecordField"><view class="picker">{{item.month||'请选择'}}</view></picker></view>
+            <view class="field"><text class="label">类型</text><picker range="{{kindOptions}}" data-type="awards" data-index="{{index}}" data-key="kind" bindchange="bindRecordPicker"><view class="picker">{{item.kind}}</view></picker></view>
+          </view>
+          <view class="switch-line compact"><text>大学以来，非高中奖项</text><switch checked="{{item.university}}" data-type="awards" data-index="{{index}}" data-key="university" bindchange="bindRecordSwitch" color="#216452"/></view>
+          <view class="switch-line compact"><text>已正式公布，非立项或拟推荐</text><switch checked="{{item.announced}}" data-type="awards" data-index="{{index}}" data-key="announced" bindchange="bindRecordSwitch" color="#216452"/></view>
+          <view class="switch-line compact"><text>有对应证明且信息一致</text><switch checked="{{item.evidence}}" data-type="awards" data-index="{{index}}" data-key="evidence" bindchange="bindRecordSwitch" color="#216452"/></view>
+        </view>
+
+        <view class="record-title top-gap">
+          <text class="subhead no-margin">参与志愿及组织策划活动</text>
+          <button size="mini" data-type="activities" bindtap="addRecord">＋ 添加</button>
+        </view>
+        <view wx:if="{{form.activities.length===0}}" class="empty">暂无填写项 · Word 将填写“无”</view>
+        <view class="record-card" wx:for="{{form.activities}}" wx:key="index">
+          <view class="record-head"><text>第{{index+1}}项</text><button size="mini" data-type="activities" data-index="{{index}}" bindtap="removeRecord">移除</button></view>
+          <view class="field"><text class="label">活动年月</text><picker mode="date" fields="month" value="{{item.month}}" data-type="activities" data-index="{{index}}" data-key="month" bindchange="bindRecordField"><view class="picker">{{item.month||'请选择'}}</view></picker></view>
+          <view class="field"><text class="label">实际参与、组织或策划内容</text><input value="{{item.name}}" data-type="activities" data-index="{{index}}" data-key="name" bindinput="bindRecordField" /></view>
+          <view class="switch-line compact"><text>内容及年月真实</text><switch checked="{{item.truth}}" data-type="activities" data-index="{{index}}" data-key="truth" bindchange="bindRecordSwitch" color="#216452"/></view>
+        </view>
+      </block>
+
+      <!-- Step 4 -->
+      <block wx:if="{{step===3}}">
+        <view class="notice">
+          <text class="notice-title">得票率的分母是应到人数</text>
+          <text>赞成票 ÷ 全班有表决权团员总人数，必须严格大于50%；不能用实到人数替代。</text>
+        </view>
+
+        <view class="field"><text class="label">推优大会日期 *</text><picker mode="date" value="{{form.meetingDate}}" data-key="meetingDate" bindchange="bindDate"><view class="picker">{{form.meetingDate||'请选择'}}</view></picker></view>
+        <view class="field"><text class="label">实际会议地点 *</text><input value="{{form.location}}" data-key="location" bindinput="bindField" maxlength="35" /></view>
+
+        <view class="grid2">
+          <view class="field"><text class="label">应到有表决权团员 *</text><input type="number" value="{{form.expected}}" data-key="expected" bindinput="bindField" /></view>
+          <view class="field"><text class="label">实到有表决权团员 *</text><input type="number" value="{{form.present}}" data-key="present" bindinput="bindField" /></view>
+          <view class="field"><text class="label">实际投票人数 *</text><input type="number" value="{{form.voting}}" data-key="voting" bindinput="bindField" /></view>
+          <view class="field"><text class="label">赞成票 *</text><input type="number" value="{{form.yes}}" data-key="yes" bindinput="bindField" /></view>
+          <view class="field"><text class="label">反对票 *</text><input type="number" value="{{form.no}}" data-key="no" bindinput="bindField" /></view>
+          <view class="field"><text class="label">弃权票 *</text><input type="number" value="{{form.abstain}}" data-key="abstain" bindinput="bindField" /></view>
+        </view>
+
+        <view class="field">
+          <text class="label">候选人本人出席并自我评述 *</text>
+          <picker range="{{yesNoOptions}}" data-key="attended" data-source="yesNoOptions" bindchange="bindPicker"><view class="picker">{{form.attended||'请选择'}}</view></picker>
+        </view>
+
+        <view class="metric-card">
+          <text>赞成票 / 应到人数</text>
+          <text class="metric-value">{{voteRate}}</text>
+        </view>
+      </block>
+
+      <!-- Step 5 -->
+      <block wx:if="{{step===4}}">
+        <view class="notice neutral">
+          <text class="notice-title">综合考察正文合计不少于200字</text>
+          <text>字数不含标点、空白及研究决定，六方面均须有具体内容。当前：{{opinionCount}}字。</text>
+        </view>
+
+        <view class="field"><text class="label">优点及实际表现 *</text><textarea value="{{form.strengths}}" data-key="strengths" bindinput="bindField" maxlength="-1" auto-height /></view>
+        <view class="field"><text class="label">不足及改进方向 *</text><textarea value="{{form.weaknesses}}" data-key="weaknesses" bindinput="bindField" maxlength="-1" auto-height /></view>
+        <view class="field"><text class="label">基础团务完成情况 *</text><textarea value="{{form.duties}}" data-key="duties" bindinput="bindField" maxlength="-1" auto-height /></view>
+        <view class="field"><text class="label">服务班级、同学的积极性 *</text><textarea value="{{form.service}}" data-key="service" bindinput="bindField" maxlength="-1" auto-height /></view>
+        <view class="field"><text class="label">群众意见和平时综合表现 *</text><textarea value="{{form.peers}}" data-key="peers" bindinput="bindField" maxlength="-1" auto-height /></view>
+        <view class="field"><text class="label">团支委综合考察结论 *</text><textarea value="{{form.conclusion}}" data-key="conclusion" bindinput="bindField" maxlength="-1" auto-height /></view>
+        <view class="field"><text class="label">团支委研究决定日期 *</text><picker mode="date" value="{{form.decisionDate}}" data-key="decisionDate" bindchange="bindDate"><view class="picker">{{form.decisionDate||'请选择'}}</view></picker></view>
+        <text class="hint">保守容量为200—330字，最终仍须在 Word/WPS 中核验实际分页。</text>
+      </block>
+
+      <!-- Step 6 -->
+      <block wx:if="{{step===5}}">
+        <view class="notice">
+          <text class="notice-title">{{form.role==='secretary'?'团支书本人参评':'签名规则'}}</text>
+          <text wx:if="{{form.role==='secretary'}}">委员会意见由本班宣传委员签名；公示栏由本班团支书签名。</text>
+          <text wx:elif="{{form.role==='member'}}">普通团员参评时，两处均由本班团支书电子签名。</text>
+          <text wx:else>请先在基本情况中选择候选人身份。</text>
+        </view>
+
+        <view class="field"><text class="label">委员会意见实际签名人姓名 *</text><input value="{{form.committeeSigner}}" data-key="committeeSigner" bindinput="bindField" maxlength="20" /></view>
+        <view class="image-field">
+          <view><text class="label">委员会意见电子签名 *</text><text class="hint">使用实际签名人授权的 PNG/JPG 图片。</text></view>
+          <button class="outline" data-key="committeeSignature" bindtap="chooseImage">{{imageState.committeeSignature.ready?'重新选择':'选择图片'}}</button>
+          <text class="image-status {{imageState.committeeSignature.ready?'ok':''}}">{{imageState.committeeSignature.label}}</text>
+        </view>
+
+        <view class="field"><text class="label">公示实际签名人姓名 *</text><input value="{{form.publicSigner}}" data-key="publicSigner" bindinput="bindField" maxlength="20" /></view>
+        <view class="image-field">
+          <view><text class="label">公示电子签名 *</text><text class="hint">使用本班团支书实际授权的签名图片。</text></view>
+          <button class="outline" data-key="publicSignature" bindtap="chooseImage">{{imageState.publicSignature.ready?'重新选择':'选择图片'}}</button>
+          <text class="image-status {{imageState.publicSignature.ready?'ok':''}}">{{imageState.publicSignature.label}}</text>
+        </view>
+      </block>
+
+      <!-- Step 7 -->
+      <block wx:if="{{step===6}}">
+        <view class="notice">
+          <text class="notice-title">公示期限存在文件冲突</text>
+          <text>原批注要求严格5个自然日，实施办法规定一般不少于5个工作日。请先取得学院统一确认口径。</text>
+        </view>
+
+        <view class="field">
+          <text class="label">学院已确认的公示口径 *</text>
+          <picker range="{{publicPolicyOptions}}" range-key="label" data-key="publicPolicy" data-source="publicPolicyOptions" bindchange="bindPicker">
+            <view class="picker">{{form.publicPolicy==='work'?'一般不少于5个工作日':form.publicPolicy==='natural'?'严格5个自然日（须学院确认）':'请选择'}}</view>
+          </picker>
+        </view>
+        <view class="field"><text class="label">统一口径的来源 *</text><input value="{{form.policySource}}" data-key="policySource" bindinput="bindField" placeholder="通知标题、发布日期或答疑记录" /></view>
+
+        <view class="grid2">
+          <view class="field"><text class="label">公示开始日期</text><view class="readonly">{{publicStartText||'由大会日期自动确定'}}</view></view>
+          <view class="field"><text class="label">实际公示结束日期 *</text><picker mode="date" value="{{form.publicEnd}}" data-key="publicEnd" bindchange="bindDate"><view class="picker">{{form.publicEnd||'请选择'}}</view></picker></view>
+        </view>
+
+        <view class="field"><text class="label">区间内额外休息日</text><input value="{{form.offDays}}" data-key="offDays" bindinput="bindField" placeholder="YYYY-MM-DD，逗号分隔；没有留空" /></view>
+        <view class="field"><text class="label">区间内调休工作日</text><input value="{{form.onDays}}" data-key="onDays" bindinput="bindField" placeholder="YYYY-MM-DD，逗号分隔；没有留空" /></view>
+
+        <view class="switch-line">
+          <text>已按学院实际执行校历核实节假日和调休</text>
+          <switch checked="{{form.calendarConfirmed}}" data-key="calendarConfirmed" bindchange="bindSwitch" color="#216452" />
+        </view>
+
+        <view class="field">
+          <text class="label">实际公示结束且无异议 *</text>
+          <picker range="{{yesNoOptions}}" data-key="noObjection" data-source="yesNoOptions" bindchange="bindPicker"><view class="picker">{{form.noObjection||'请选择'}}</view></picker>
+        </view>
+
+        <view class="notice neutral">{{publicCalc}}</view>
+        <view class="field"><text class="label">公示签字日期</text><view class="readonly">{{publicSignText||'由结束日期自动计算'}}</view></view>
+
+        <text class="subhead">微信公示文案</text>
+        <view class="copy-box">{{noticeText}}</view>
+        <button class="outline wide" bindtap="copyNotice">复制公示文案</button>
+        <text class="hint">必须以微信文字消息实际发送到团员群，再截取发送后的消息；不能把文案放在文件里截图代替。</text>
+      </block>
+
+      <!-- Step 8 -->
+      <block wx:if="{{step===7}}">
+        <view class="notice neutral">
+          <text class="notice-title">提交前逐项对照原始材料</text>
+          <text>以下开关表示人工已完成核对，不代表小程序识别或认证证书、截图与事实。</text>
+        </view>
+
+        <view class="check-card" wx:for="{{checks}}" wx:key="key">
+          <text>{{item.label}}</text>
+          <switch checked="{{item.checked}}" data-key="{{item.key}}" bindchange="bindCheck" color="#216452" />
+        </view>
+
+        <button class="primary wide action" bindtap="validateAll">运行完整校验</button>
+
+        <view class="status-panel">
+          <view class="status-row">
+            <text>当前材料状态</text>
+            <text class="pill {{validated && issueCount===0?'success':''}}">{{validated?(issueCount===0?'填写校验通过':issueCount+'项待处理'):'待校验'}}</text>
+          </view>
+          <view class="metrics">
+            <view><text class="big">{{issueCount}}</text><text>待处理</text></view>
+            <view><text class="big">{{voteRate}}</text><text>赞成/应到</text></view>
+            <view><text class="big">{{opinionCount}}</text><text>考察正文</text></view>
+          </view>
+        </view>
+
+        <view class="error-panel" wx:if="{{errors.length}}">
+          <text class="error-title">请先处理以下问题</text>
+          <view class="error-item" wx:for="{{errors}}" wx:key="index">
+            <text class="error-type">{{item.type}}</text>
+            <text>{{item.message}}</text>
+          </view>
+        </view>
+
+        <view class="warn-panel" wx:if="{{warnings.length}}">
+          <view class="warn-item" wx:for="{{warnings}}" wx:key="index">• {{item}}</view>
+        </view>
+
+        <view class="export-step">
+          <view class="export-num">1</view>
+          <view class="export-body">
+            <text class="export-title">生成并打开 DOCX 校对稿</text>
+            <text class="export-desc">通过校验后，小程序直接在学院原模板中定点填写并打开 Word。</text>
+            <button class="primary wide" bindtap="generateDraft" disabled="{{validated && issueCount>0}}">生成校对稿</button>
+            <text class="result">{{docStatus}}</text>
+          </view>
+        </view>
+
+        <view class="export-step">
+          <view class="export-num">2</view>
+          <view class="export-body">
+            <text class="export-title">在 Word/WPS 核验严格2页</text>
+            <text class="export-desc">检查照片、文字、表格及签名完整后导出 PDF，再从微信聊天或文件中选择该 PDF。</text>
+            <button class="outline wide" bindtap="choosePdf" disabled="{{!draftReady}}">选择 PDF 并读取页数</button>
+            <text class="result {{pdfPages===2?'ok':''}}">{{pdfStatus}}</text>
+            <view class="switch-line compact">
+              <text>我确认该PDF来自当前校对稿，严格2页且内容完整</text>
+              <switch checked="{{form.pdfMatch}}" bindchange="togglePdfMatch" disabled="{{pdfPages!==2}}" color="#216452" />
+            </view>
+          </view>
+        </view>
+
+        <view class="export-step">
+          <view class="export-num">3</view>
+          <view class="export-body">
+            <text class="export-title">打开 DOCX 提交稿</text>
+            <text class="export-desc">提交稿与已核验校对稿内容完全相同。打开后可用右上角菜单发送或另存。</text>
+            <button class="primary wide" bindtap="openFinal" disabled="{{!finalReady}}">打开 DOCX 提交稿</button>
+            <button class="outline wide secondary-action" bindtap="copyReport">复制核对记录</button>
+          </view>
+        </view>
+
+        <view class="boundary">
+          <text class="boundary-title">模板来源与校验边界</text>
+          <text>基于学院原始批注模板定点填充，保留16行主表、合并单元格、表格边框、字体、段落及页边距。工具能核算日期、票数、时长、字数、缺项与所选PDF页数，不能认证证据真实性、授权签名或事实真实性。</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="footer-nav">
+    <button class="nav-btn" bindtap="previous" disabled="{{step===0}}">上一步</button>
+    <text>第 {{step+1}} / 8 步</text>
+    <button class="nav-btn primary" bindtap="next" disabled="{{step===7}}">下一步</button>
+  </view>
+
+  <view class="footnote">
+    本工具辅助填写与核对。资格、材料真实性和最终推荐结果由相应组织审核；上级团组织、党支部意见保留原签字区域。
+  </view>
+</view>

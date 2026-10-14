@@ -1,0 +1,12 @@
+{
+  "pages": ["pages/index/index"],
+  "window": {
+    "navigationBarTitleText": "推优入党综合考察表",
+    "navigationBarBackgroundColor": "#1d3039",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f2",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}
