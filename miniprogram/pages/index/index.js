@@ -7,6 +7,12 @@ const RULES_DATE = '2026-10-13';
 const DRAFT_KEY = 'tuiyou-mini-draft-v1';
 const fs = wx.getFileSystemManager();
 
+function wxp(name, options = {}) {
+  return new Promise((resolve, reject) => {
+    wx[name]({...options, success: resolve, fail: reject});
+  });
+}
+
 function emptyScore(none = false) {
   return { none, value: '', rank: '', total: '', evidence: false };
 }
@@ -72,6 +78,8 @@ Page({
     yesNoOptions: ['是','否'],
     haveOptions: ['有','无'],
     targetOptions: ['入党积极分子','发展对象'],
+    statusOptions: ['曾任','现任'],
+    kindOptions: ['奖励','惩处'],
     applyDateOptions: T.applyDates.map(v => ({label:T.cnDate(v), value:v})),
     activistDateOptions: T.activistDates.map(v => ({label:v === '无' ? '无' : T.cnDate(v), value:v})),
     publicPolicyOptions: [
@@ -309,11 +317,11 @@ Page({
   async chooseImage(e) {
     const key = e.currentTarget.dataset.key;
     try {
-      const choose = await wx.chooseMedia({count:1,mediaType:['image'],sourceType:['album','camera'],sizeType:['compressed']});
+      const choose = await wxp('chooseMedia',{count:1,mediaType:['image'],sourceType:['album','camera'],sizeType:['compressed']});
       const file = choose.tempFiles && choose.tempFiles[0];
       if (!file) return;
-      if (file.size > 4*1024*1024) throw new Error('图片不得超过4MB');
-      const info = await wx.getImageInfo({src:file.tempFilePath});
+      if (file.size > 2*1024*1024) throw new Error('图片不得超过2MB，请先压缩');
+      const info = await wxp('getImageInfo',{src:file.tempFilePath});
       const read = await new Promise((resolve,reject) => fs.readFile({
         filePath:file.tempFilePath,
         encoding:'base64',
