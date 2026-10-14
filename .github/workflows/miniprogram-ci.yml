@@ -1,6 +1,13 @@
 name: Mini Program CI
 
 on:
+  push:
+    branches: ['main']
+    paths:
+      - 'miniprogram/**'
+      - 'project.config.json'
+      - 'scripts/check_miniprogram.js'
+      - '.github/workflows/miniprogram-ci.yml'
   pull_request:
     paths:
       - 'miniprogram/**'
