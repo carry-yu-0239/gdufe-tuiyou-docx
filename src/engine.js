@@ -152,10 +152,36 @@
   function drawing(id,rel,width,height) {
     return `<w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${width}" cy="${height}"/><wp:docPr id="${id}" name="填写图片${id}"/><wp:cNvGraphicFramePr/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="0" name="图片${id}.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="${rel}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${width}" cy="${height}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>`;
   }
+  function applyRequestedDocxFormatting(doc) {
+    const textFields = new Set(['awards','activities','opinion0','opinion1','opinion2','opinion3','opinion4','decision']);
+    // Only the runs holding these template values receive fifth-size SimSun.
+    doc = doc.replace(/<w:r\b[^>]*>[\s\S]*?<\/w:r>/g, run => {
+      if (![...textFields].some(key => run.includes('{{' + key + '}}'))) return run;
+      let props = (run.match(/<w:rPr>([\s\S]*?)<\/w:rPr>/) || [,''])[1];
+      props = props.replace(/<w:rFonts\b[^>]*\/>/g, '').replace(/<w:sz\b[^>]*\/>/g, '').replace(/<w:szCs\b[^>]*\/>/g, '');
+      props += '<w:rFonts w:ascii="宋体" w:hAnsi="宋体" w:eastAsia="宋体" w:cs="宋体"/><w:sz w:val="21"/><w:szCs w:val="21"/>';
+      return /<w:rPr>/.test(run)
+        ? run.replace(/<w:rPr>[\s\S]*?<\/w:rPr>/, '<w:rPr>' + props + '</w:rPr>')
+        : run.replace(/^(<w:r\b[^>]*>)/, '$1<w:rPr>' + props + '</w:rPr>');
+    });
+    // Set 1.0 line spacing on the photo paragraph, not the photo's neighboring cells.
+    doc = doc.replace(/<w:p\b[^>]*>[\s\S]*?<\/w:p>/g, paragraph => {
+      if (!paragraph.includes('{{photo}}')) return paragraph;
+      const spacing = '<w:spacing w:line="240" w:lineRule="auto"/>';
+      if (/<w:pPr>/.test(paragraph)) {
+        return paragraph.replace(/<w:pPr>([\s\S]*?)<\/w:pPr>/, (whole, inner) =>
+          '<w:pPr>' + inner.replace(/<w:spacing\b[^>]*\/>/g, '') + spacing + '</w:pPr>');
+      }
+      if (/<w:pPr\s*\/>/.test(paragraph)) return paragraph.replace(/<w:pPr\s*\/>/, '<w:pPr>' + spacing + '</w:pPr>');
+      return paragraph.replace(/^(<w:p\b[^>]*>)/, '$1<w:pPr>' + spacing + '</w:pPr>');
+    });
+    return doc;
+  }
   function generate(d,assets) {
     const zip=g.fflate.unzipSync(fromBase64(g.TUIYOU_TEMPLATE.base64));
     let doc=g.fflate.strFromU8(zip['word/document.xml']);
     let rels=g.fflate.strFromU8(zip['word/_rels/document.xml.rels']);
+    doc=applyRequestedDocxFormatting(doc);
     const v=values(d);for(const [k,value] of Object.entries(v)){const token='{{'+k+'}}';if(!doc.includes(token))throw new Error('模板字段缺失：'+k);doc=doc.split(token).join(xml(value).replace(/\n/g,'</w:t><w:br/><w:t xml:space="preserve">'));}
     ['photo','committeeSignature','publicSignature'].forEach((key,i)=>{
       if(!assets[key])throw new Error('缺少图片：'+key);
