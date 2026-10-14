@@ -247,7 +247,7 @@
           <view class="grid2">
             <view class="field">
               <text class="label">任职状态</text>
-              <picker range="{{['曾任','现任']}}" data-type="cadres" data-index="{{index}}" data-key="status" bindchange="bindRecordPicker">
+              <picker range="{{statusOptions}}" data-type="cadres" data-index="{{index}}" data-key="status" bindchange="bindRecordPicker">
                 <view class="picker">{{item.status}}</view>
               </picker>
             </view>
@@ -270,7 +270,7 @@
           <view class="field"><text class="label">正式等级（无等级留空）</text><input value="{{item.level}}" data-type="awards" data-index="{{index}}" data-key="level" bindinput="bindRecordField" /></view>
           <view class="grid2">
             <view class="field"><text class="label">奖惩年月</text><picker mode="date" fields="month" value="{{item.month}}" data-type="awards" data-index="{{index}}" data-key="month" bindchange="bindRecordField"><view class="picker">{{item.month||'请选择'}}</view></picker></view>
-            <view class="field"><text class="label">类型</text><picker range="{{['奖励','惩处']}}" data-type="awards" data-index="{{index}}" data-key="kind" bindchange="bindRecordPicker"><view class="picker">{{item.kind}}</view></picker></view>
+            <view class="field"><text class="label">类型</text><picker range="{{kindOptions}}" data-type="awards" data-index="{{index}}" data-key="kind" bindchange="bindRecordPicker"><view class="picker">{{item.kind}}</view></picker></view>
           </view>
           <view class="switch-line compact"><text>大学以来，非高中奖项</text><switch checked="{{item.university}}" data-type="awards" data-index="{{index}}" data-key="university" bindchange="bindRecordSwitch" color="#216452"/></view>
           <view class="switch-line compact"><text>已正式公布，非立项或拟推荐</text><switch checked="{{item.announced}}" data-type="awards" data-index="{{index}}" data-key="announced" bindchange="bindRecordSwitch" color="#216452"/></view>
