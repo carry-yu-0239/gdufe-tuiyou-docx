@@ -5,11 +5,22 @@ page {
   font-size: 28rpx;
 }
 button {
+  box-sizing: border-box;
+  min-width: 0;
   font-size: 26rpx;
   border-radius: 14rpx;
   line-height: 1.2;
 }
 button::after { border: none; }
+/* Override the native v2 button sizes inside compact and full-width layouts. */
+button[size="mini"] {
+  width: auto; min-width: 0; min-height: 72rpx; margin: 0;
+  padding: 16rpx; font-size: 22rpx; line-height: 1.4; white-space: nowrap;
+}
+button.wide, button.nav-btn {
+  width: 100%; min-width: 0; min-height: 88rpx;
+  padding: 20rpx 16rpx; line-height: 1.4;
+}
 .page { min-height: 100vh; padding-bottom: 70rpx; }
 .hero {
   background: #ffffff;
@@ -53,10 +64,11 @@ button::after { border: none; }
 .draft-bar {
   margin: 22rpx 24rpx 0; padding: 18rpx 20rpx; border: 1rpx solid #d7dcda;
   background: #fff; border-radius: 14rpx; color: #687277; font-size: 21rpx;
-  display: flex; align-items: center; justify-content: space-between; gap: 16rpx;
+  display: flex; flex-direction: column; align-items: stretch; gap: 16rpx;
 }
-.draft-actions { display: flex; gap: 8rpx; flex-shrink: 0; }
-.draft-actions button { margin: 0; min-width: 84rpx; padding: 0 12rpx; background: #fff; border: 1rpx solid #d7dcda; }
+.draft-note { display: block; line-height: 1.6; }
+.draft-actions { display: flex; flex-wrap: wrap; gap: 12rpx; min-width: 0; }
+.draft-actions button { flex: none; background: #fff; border: 1rpx solid #d7dcda; }
 
 .card {
   margin: 22rpx 24rpx; background: #fff; border: 1rpx solid #d7dcda;
@@ -81,8 +93,8 @@ input, textarea, .picker, .readonly {
 textarea { min-height: 150rpx; line-height: 1.65; }
 .picker { color: #29343a; display: flex; align-items: center; }
 .readonly { background: #f1f4f2; color: #64706d; display: flex; align-items: center; }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18rpx; }
-.grid3 { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 12rpx; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18rpx; }
+.grid3 { display: grid; grid-template-columns: minmax(0, 1.15fr) repeat(2, minmax(0, 1fr)); gap: 12rpx; }
 .grid3 input { padding-left: 12rpx; padding-right: 12rpx; }
 
 .notice {
@@ -98,8 +110,9 @@ textarea { min-height: 150rpx; line-height: 1.65; }
   padding: 18rpx 0; border-bottom: 1rpx solid #edf0ef; font-size: 23rpx;
 }
 .switch-line.compact { padding: 13rpx 0; }
+.switch-line > text, .check-card > text { flex: 1; min-width: 0; }
 .inline-switch { display: flex; align-items: center; gap: 10rpx; color: #687277; font-size: 21rpx; }
-switch { transform: scale(.82); transform-origin: right center; }
+switch { flex-shrink: 0; transform: scale(.82); transform-origin: right center; }
 
 .subhead { display: block; font-size: 27rpx; font-weight: 700; margin: 34rpx 0 18rpx; }
 .subhead.no-margin { margin: 0; }
@@ -152,7 +165,7 @@ switch { transform: scale(.82); transform-origin: right center; }
 .status-row { display: flex; align-items: center; justify-content: space-between; font-weight: 700; }
 .pill { font-size: 20rpx; padding: 7rpx 12rpx; border-radius: 999rpx; background: #ecefed; color: #596468; }
 .pill.success { background: #e7f3ed; color: #216452; }
-.metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 14rpx; margin-top: 22rpx; }
+.metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14rpx; margin-top: 22rpx; }
 .metrics view { display: flex; flex-direction: column; align-items: center; color: #7b8588; font-size: 19rpx; }
 .big { font-family: Georgia, serif; font-size: 40rpx; color: #212b32; margin-bottom: 4rpx; }
 
@@ -192,9 +205,10 @@ switch { transform: scale(.82); transform-origin: right center; }
 .action { margin-top: 24rpx; }
 
 .footer-nav {
-  margin: 0 24rpx; display: grid; grid-template-columns: 1fr auto 1fr; gap: 20rpx;
+  margin: 0 24rpx; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 20rpx;
   align-items: center; color: #687277; font-size: 22rpx;
 }
+.footer-progress { white-space: nowrap; text-align: center; }
 .nav-btn { margin: 0; width: 100%; background: #fff; border: 1rpx solid #d7dcda; color: #26353b; }
 .footnote {
   margin: 28rpx 30rpx 0; padding-top: 24rpx; border-top: 1rpx solid #d7dcda;
@@ -205,6 +219,4 @@ switch { transform: scale(.82); transform-origin: right center; }
   .grid2 { grid-template-columns: 1fr; }
   .hero-main { align-items: flex-start; }
   .page-emblem { display: none; }
-  .draft-bar { flex-direction: column; align-items: stretch; }
-  .draft-actions { justify-content: flex-end; }
 }

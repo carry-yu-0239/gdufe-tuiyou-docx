@@ -21,11 +21,12 @@
     </view>
   </view>
 
-  <scroll-view class="steps" scroll-x enable-flex>
+  <scroll-view class="steps" scroll-x enable-flex scroll-into-view="step-chip-{{step}}">
     <view class="steps-inner">
       <view
         wx:for="{{stepNames}}"
         wx:key="index"
+        id="step-chip-{{index}}"
         class="step-chip {{step===index?'active':''}}"
         data-step="{{index}}"
         bindtap="goStep"
@@ -37,7 +38,7 @@
   </scroll-view>
 
   <view class="draft-bar">
-    <text>资料仅保存在当前小程序与本机草稿中。</text>
+    <text class="draft-note">资料仅保存在当前小程序与本机草稿中。</text>
     <view class="draft-actions">
       <button size="mini" bindtap="saveLocalDraft">保存草稿</button>
       <button size="mini" bindtap="exportJsonDraft">导出JSON</button>
@@ -487,7 +488,7 @@
 
   <view class="footer-nav">
     <button class="nav-btn" bindtap="previous" disabled="{{step===0}}">上一步</button>
-    <text>第 {{step+1}} / 8 步</text>
+    <text class="footer-progress">第 {{step+1}} / 8 步</text>
     <button class="nav-btn primary" bindtap="next" disabled="{{step===7}}">下一步</button>
   </view>
 
