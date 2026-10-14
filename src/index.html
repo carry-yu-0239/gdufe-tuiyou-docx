@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="学院推优入党综合考察表填写工具。在本机填写、校验并下载可编辑Word文档。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'">
+<title>推优入党综合考察表 · 填写工具</title>
+<link rel="stylesheet" href="styles.css">
+<script defer src="vendor/fflate-0.8.3.js"></script><script defer src="vendor/pdf-lib-1.17.1.js"></script><script defer src="template.js"></script><script defer src="engine.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">跳到填写内容</a>
+<header class="topbar"><div class="brand"><span class="brand-mark" aria-hidden="true">团</span><div>数智学院<span class="brand-sub">团支部材料工具</span></div></div><span class="term">2026—2027学年度 · 第一学期</span><span class="local-dot">本机处理 · 离线可用</span></header>
+<div class="layout">
+<aside class="sidebar"><div class="sidebar-caption">填写流程</div><nav id="steps" aria-label="填写步骤"></nav><div class="side-note"><strong>一份表，两页纸。</strong><p>保留学院原模板。无相关内容填“无”，签名与证明按实际情况准备。</p><p class="small">审核口径更新至2026年10月13日</p></div><a class="back" href="../index.html">← 团委学生工作台</a></aside>
+<main id="main" tabindex="-1">
+<div class="eyebrow">材料准备 / 入党推优</div><div class="title-row"><div><h1>推优入党综合考察表</h1><p class="lede">逐项填写，及时校验，下载可编辑的 Word 材料。</p></div><div class="page-emblem"><b>02</b><span>页数要求</span></div></div>
+<div class="workflow"><span><b>1</b>填写真实资料</span><i>→</i><span><b>2</b>校验与佐证核对</span><i>→</i><span><b>3</b>核验2页并下载</span></div>
+<div class="toolbar"><span id="draftStatus">资料仅保留在当前页面；刷新前请保存草稿。</span><div><button type="button" id="saveDraft">保存草稿</button><label class="button" for="importDraft">恢复草稿<input type="file" id="importDraft" accept=".json,application/json" class="visually-hidden"></label></div></div>
+<div id="errorSummary" class="error-summary" tabindex="-1" hidden aria-labelledby="errorTitle"><h2 id="errorTitle">请先处理以下问题</h2><ul id="errorList"></ul></div>
+<form id="form" novalidate><div id="sections"></div></form>
+<div class="step-footer"><button type="button" id="previous">上一步</button><span id="stepCounter"></span><button type="button" id="next" class="primary">下一步 →</button></div>
+<footer class="footnote">本工具辅助填写与核对。资格、材料真实性和最终推荐结果由相应组织审核。上级团组织、党支部意见保留原签字区域，留待组织填写。</footer>
+</main>
+<aside class="review-rail"><div class="review-heading">当前材料状态<span class="status-pill" id="statusPill">待填写</span></div><div class="review-number"><strong id="issueCount">—</strong><span>项待处理</span></div><p id="reviewText">从基本情况开始填写，完成后运行校验。</p><div class="rail-divider"></div><div class="metric"><span>赞成票 / 应到人数</span><b id="voteRate">—</b></div><div class="metric"><span>综合考察正文</span><b id="wordCount">0 / 200字</b></div><div class="rail-divider"></div><button type="button" id="validate" class="primary wide">运行完整校验</button><button type="button" id="draftDocx" class="wide" disabled>下载 DOCX 校对稿</button><p class="rail-help">校对稿用于打开检查。实际2页通过核验后，才能下载提交稿。</p><button type="button" id="goExport" class="text-button">查看核验与下载 →</button><div class="rail-notice"><strong>公示须先完成</strong><p>不得提前填写“公示无异议”。自然日与工作日的口径冲突须先由学院统一确认。</p></div></aside>
+</div><div id="toast" role="status" aria-live="polite"></div>
+<noscript>本工具需要启用JavaScript才能填写与生成Word文件。</noscript>
+</body></html>

@@ -1,0 +1,14 @@
+dist/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+.env
+.env.*
+*.log
+# Never commit personal filled forms, draft exports, photos or signatures.
+private/
+drafts/
+*.docx
+*.pdf
+*.zip
