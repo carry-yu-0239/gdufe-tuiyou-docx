@@ -40,6 +40,8 @@
     <text>资料仅保存在当前小程序与本机草稿中。</text>
     <view class="draft-actions">
       <button size="mini" bindtap="saveLocalDraft">保存草稿</button>
+      <button size="mini" bindtap="exportJsonDraft">导出JSON</button>
+      <button size="mini" bindtap="importJsonDraft">导入JSON</button>
       <button size="mini" bindtap="restoreLocalDraft" disabled="{{!hasLocalDraft}}">恢复</button>
       <button size="mini" bindtap="clearLocalDraft" disabled="{{!hasLocalDraft}}">清除</button>
     </view>
