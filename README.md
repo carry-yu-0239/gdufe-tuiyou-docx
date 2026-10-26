@@ -20,6 +20,14 @@
 
 [完整使用说明](使用说明.md)
 
+## 青马工程报名表（Carry Lattice 点阵版）
+
+[在线打开青马工程报名表](https://carry-yu-0239.github.io/gdufe-tuiyou-docx/qingma/)
+
+独立源码位于 [qingma/](qingma/)；基于学院青马工程原始 Word 表格，浏览器本机填写、校验并导出 DOCX。
+本应用与推优入党综合考察表相互独立：部署时原站仍在根路径，青马工程站点位于 /qingma/。
+Actions 会从青马工程源文件重新构建并检查原有六段业务代码未被修改。
+
 ## GitHub Actions 与 Pages
 
 `.github/workflows/pages.yml` 在推送到 `main` 或手动触发时执行：

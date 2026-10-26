@@ -28,6 +28,13 @@ jobs:
       - name: Bundle offline static page
         run: python3 scripts/build_site.py
 
+      - name: Build Qingma Lattice tool and verify business integrity
+        run: |
+          python3 qingma/build_lattice.py
+          python3 qingma/tests/test_source_consistency.py
+          mkdir -p dist/qingma
+          cp qingma/dist/index.html dist/qingma/index.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
